@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora Sueldo Carrera Docente Chile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      background: #fff;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0077c2;
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      width: 120px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: #0077c2;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .resultado {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 8px;
+      background: #f1f9ff;
+      border-left: 6px solid #0077c2;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://drive.google.com/file/d/1SVov4Bi9PnwmHTt2Q3vJolcPbu1sLvB1" alt="Logo Carrera Docente" class="logo">
+
+    <h1>Calculadora Sueldo Carrera Docente</h1>
+
+    <label>Cantidad de horas semanales:</label>
+    <input type="number" id="horas" placeholder="Ejemplo: 44">
+
+    <label>Nivel educativo:</label>
+    <select id="nivel">
+      <option value="basica">Enseñanza Básica</option>
+      <option value="media">Enseñanza Media</option>
+    </select>
+
+    <label>Bienios (cada 2 años trabajados):</label>
+    <input type="number" id="bienios" placeholder="Ejemplo: 4">
+
+    <label>Título profesional:</label>
+    <select id="titulo">
+      <option value="sin">Sin título</option>
+      <option value="con">Con título profesional</option>
+    </select>
+
+    <label>Mención específica:</label>
+    <select id="mencion">
+      <option value="no">No</option>
+      <option value="si">Sí</option>
+    </select>
+
+    <label>Nivel de encasillamiento en Carrera Docente:</label>
+    <select id="encasillamiento">
+      <option value="acceso">Acceso</option>
+      <option value="inicial">Inicial</option>
+      <option value="avanzado">Avanzado</option>
+      <option value="experto1">Experto I</option>
+      <option value="experto2">Experto II</option>
+    </select>
+
+    <label>Porcentaje de estudiantes prioritarios:</label>
+    <input type="number" id="prioritarios" placeholder="Ejemplo: 68">
+
+    <label>AFP (descuento aprox. %):</label>
+    <input type="number" id="afp" value="11">
+
+    <label>Salud (Fonasa/Isapre %):</label>
+    <input type="number" id="salud" value="7">
+
+    <button onclick="calcularSueldo()">Calcular Sueldo</button>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+<script>
+function calcularSueldo() {
+  let horas = parseFloat(document.getElementById("horas").value) || 0;
+  let nivel = document.getElementById("nivel").value;
+  let bienios = parseInt(document.getElementById("bienios").value) || 0;
+  let titulo = document.getElementById("titulo").value;
+  let mencion = document.getElementById("mencion").value;
+  let encasillamiento = document.getElementById("encasillamiento").value;
+  let prioritarios = parseFloat(document.getElementById("prioritarios").value) || 0;
+  let afp = parseFloat(document.getElementById("afp").value) / 100;
+  let salud = parseFloat(document.getElementById("salud").value) / 100;
+
+  let base44h = 936585;
+  let base = (base44h / 44) * horas;
+
+  let brp = 0;
+  if (titulo === "con" && mencion === "si") brp = 504789 * (horas/44);
+  else if (titulo === "con") brp = 339621 * (horas/44);
+
+  let tramoBase = 0;
+  switch(encasillamiento){
+    case "acceso": tramoBase = 19119; break;
+    case "inicial": tramoBase = 43000; break;
+    case "avanzado": tramoBase = 86000; break;
+    case "experto1": tramoBase = 172000; break;
+    case "experto2": tramoBase = 258000; break;
+  }
+  let tramo = tramoBase * (horas/44);
+
+  let asignacionBienios = base * (0.06 * bienios);
+
+  let asignacionPrioritarios = 0;
+  if (prioritarios >= 60) {
+    asignacionPrioritarios = 63936 * (horas/44);
+  }
+
+  let sueldoBruto = base + brp + tramo + asignacionBienios + asignacionPrioritarios;
+  let descuentos = sueldoBruto * (afp + salud);
+  let sueldoLiquido = sueldoBruto - descuentos;
+
+  document.getElementById("resultado").innerHTML = `
+    <strong>Resultado estimado:</strong><br><br>
+    ✅ Sueldo base proporcional: <strong>$${base.toLocaleString()}</strong><br>
+    ✅ BRP: <strong>$${brp.toLocaleString()}</strong><br>
+    ✅ Asignación tramo (<em>${encasillamiento}</em>): <strong>$${tramo.toLocaleString()}</strong><br>
+    ✅ Asignación bienios: <strong>$${asignacionBienios.toLocaleString()}</strong><br>
+    ✅ Asignación prioritarios: <strong>$${asignacionPrioritarios.toLocaleString()}</strong><br>
+    <hr>
+    💰 <strong>Sueldo Bruto: $${sueldoBruto.toLocaleString()}</strong><br>
+    📉 Descuentos AFP + Salud: $${descuentos.toLocaleString()}<br>
+    ✅ <strong>Sueldo Líquido aprox.: $${sueldoLiquido.toLocaleString()}</strong>
+  `;
+}
+</script>
+</body>
+</html>
